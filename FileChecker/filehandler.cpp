@@ -43,8 +43,12 @@ QStringList FileHandler::readFile()
 
         QStringList pair = str.split(sep);
         pair[0] = pair[0].trimmed();
+        if(pair[0].isEmpty())
+            continue;
+
         pair[1] = pair[1].trimmed();
         str = pair[0]+sep+pair[1];
+
         if(!str.isEmpty())
             data.append(str); //считываем все данные с файла в объект data
         }

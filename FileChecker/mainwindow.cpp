@@ -169,7 +169,7 @@ void MainWindow::checkSumOne(int index)
         if(checksumsLabels[index]->text() != checksum)
             throw QString("Суммы разные");
 
-        statusIndicates[index]->setToolTip("Is correct");
+        statusIndicates[index]->setToolTip("Сумма верная");
 
 
     }  catch (QString ex) {
