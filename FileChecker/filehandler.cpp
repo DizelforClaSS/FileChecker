@@ -1,6 +1,6 @@
 #include "filehandler.h"
 #define DIR_WITH_BEG_FILE "./filecheckers"  // Директория с файлами в которых прописаны пути и контрольные суммы
-FileHandler::FileHandler(QWidget *pParent) : parent(pParent)
+FileHandler::FileHandler(QWidget *pParent, const QString &sep) : parent(pParent), sep(sep)
 {
 
 }
@@ -38,9 +38,15 @@ QStringList FileHandler::readFile()
     while(!file.atEnd())
     {
         QString str = file.readLine().trimmed();
+        if(str.indexOf(sep) < 0)
+            continue;
+
+        QStringList pair = str.split(sep);
+        pair[0] = pair[0].trimmed();
+        pair[1] = pair[1].trimmed();
+        str = pair[0]+sep+pair[1];
         if(!str.isEmpty())
             data.append(str); //считываем все данные с файла в объект data
-
         }
     file.close();
     return data;

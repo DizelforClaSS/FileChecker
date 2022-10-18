@@ -3,5 +3,6 @@
         <file>Resources/sum_icon.png</file>
         <file>Resources/trash.png</file>
         <file>Resources/checksum.png</file>
+        <file>Resources/file_replace.png</file>
     </qresource>
 </RCC>

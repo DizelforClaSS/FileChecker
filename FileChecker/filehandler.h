@@ -12,9 +12,10 @@ class FileHandler : public QObject
     Q_OBJECT
 
     QWidget* parent;
+    QString sep;
 
 public:
-    FileHandler(QWidget* pParent);
+    FileHandler(QWidget* pParent, const QString& sep);
 
     ///Возвращает строку с контрольнной суммой файла
     ///filepath - путь к файлу

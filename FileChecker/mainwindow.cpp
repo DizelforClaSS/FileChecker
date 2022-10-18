@@ -6,7 +6,7 @@ MainWindow::MainWindow(QWidget *parent)
     , ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
-    filehandler = new FileHandler(this);
+    filehandler = new FileHandler(this, sep);
     this->setFixedSize(1200, 800);
 
     connect(ui->loadButton, &QAction::triggered, this, &MainWindow::loadFile);
@@ -60,9 +60,18 @@ void MainWindow::saveFile()
 
 void MainWindow::addFile()
 {
+
     QString filepath = filehandler->chooseFileToRead();
+
+    if(checkDoublePath(filepath))
+    {
+        messageBox("Такой файл уже есть в системе!");
+        return;
+    }
+
     if (filepath.isEmpty())
         return;
+
     if(loadedData.contains(filepath + sep))
         return;
 
@@ -74,25 +83,16 @@ void MainWindow::deleteOne()
 {
     PushButtonWithIndex* but = dynamic_cast<PushButtonWithIndex*>(sender());
     int index = but->getIndex();
-    delete filepathsLabels[index];
-    filepathsLabels.remove(index);
 
-    delete checksumsLabels[index];
-    checksumsLabels.remove(index);
-
-    delete statusIndicates[index];
-    statusIndicates.remove(index);
-
-    delete checkButtons[index];
-    checkButtons.remove(index);
-
-    delete delButtons[index];
-    delButtons.remove(index);
-
-    delete calcButtons[index];
-    calcButtons.remove(index);
+    deleteButton(checksumsLabels, index);
+    deleteButton(statusIndicates, index);
+    deleteButton(checkButtons, index);
+    deleteButton(delButtons, index);
+    deleteButton(calcButtons, index);
+    deleteButton(changeFileButtons, index);
 
     loadedData.remove(index);
+
     for(int i = index; i < delButtons.size(); i++)
     {
         delButtons[i]->setIndex(i);
@@ -118,6 +118,7 @@ void MainWindow::deleteAll()
     clearWidgetsList(checkButtons);
     clearWidgetsList(delButtons);
     clearWidgetsList(calcButtons);
+    clearWidgetsList(changeFileButtons);
     loadedData.clear();
 }
 
@@ -183,6 +184,25 @@ void MainWindow::checkAll()
         checkSumOne(i);
 }
 
+void MainWindow::changeFile()
+{
+    QString filepath = filehandler->chooseFileToRead();
+    if(checkDoublePath(filepath))
+    {
+        messageBox("Такой файл уже есть в системе!");
+        return;
+    }
+
+    if(filepath.isEmpty())
+        return;
+
+    int index = dynamic_cast<PushButtonWithIndex*>(sender())->getIndex();
+    filepathsLabels[index]->setText(filepath);
+    checksumsLabels[index]->setText("");
+    setStyleStatus(statusIndicates[index], 0);
+    loadedData[index] = filepath + sep;
+}
+
 
 const QStringList MainWindow::styleStatus = {"gray;", "red;", "green;"};
 
@@ -215,15 +235,27 @@ void MainWindow::addDataToUI()
     ui->wsLayout->addWidget(checkButtons.last(), index, 3);
     ui->wsLayout->addWidget(delButtons.last(), index, 4);
     ui->wsLayout->addWidget(calcButtons.last(), index, 5);
+    ui->wsLayout->addWidget(changeFileButtons.last(), index, 6);
 
     checkButtons.last()->setIconSize(QSize(25, 25));
     checkButtons.last()->setStyleSheet("qproperty-icon: url(:/Resources/checksum.png)");
+    checkButtons.last()->setToolTip("Проверить");
+    checkButtons.last()->setToolTipDuration(500);
 
     delButtons.last()->setIconSize(QSize(25, 25));
     delButtons.last()->setStyleSheet("qproperty-icon: url(:/Resources/trash.png)");
+    delButtons.last()->setToolTip("Удалить");
+    delButtons.last()->setToolTipDuration(500);
 
     calcButtons.last()->setIconSize(QSize(25, 25));
     calcButtons.last()->setStyleSheet("qproperty-icon: url(:/Resources/sum_icon.png)");
+    calcButtons.last()->setToolTip("Вычислить");
+    calcButtons.last()->setToolTipDuration(500);
+
+    changeFileButtons.last()->setIconSize(QSize(25, 25));
+    changeFileButtons.last()->setStyleSheet("qproperty-icon: url(:/Resources/file_replace.png)");
+    changeFileButtons.last()->setToolTip("Заменить");
+    changeFileButtons.last()->setToolTipDuration(500);
 
 }
 
@@ -245,7 +277,34 @@ void MainWindow::addStrDataToUI(const QString &str)
     checkButtons.append(new PushButtonWithIndex(filepathsLabels.size() - 1));
     connect(checkButtons.last(), &QPushButton::clicked, this, &MainWindow::checkSumOne);
 
+    changeFileButtons.append(new PushButtonWithIndex(filepathsLabels.size() - 1));
+    connect(changeFileButtons.last(), &QPushButton::clicked, this, &MainWindow::changeFile);
+
     addDataToUI();
 
 }
 
+bool MainWindow::checkDoublePath(const QString &filepath)
+{
+    for(auto f : filepathsLabels)
+    {
+        if(f->text() == filepath)
+            return true;
+    }
+
+    return false;
+}
+
+void MainWindow::messageBox(const QString &message)
+{
+    QMessageBox::warning(this,"Внимание", message);
+
+}
+
+
+template<typename T>
+void MainWindow::deleteButton(QList<T*> &list, int index)
+{
+    delete list[index];
+    list.remove(index);
+}

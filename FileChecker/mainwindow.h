@@ -4,6 +4,7 @@
 #include <QMainWindow>
 #include <QLabel>
 #include <QPushButton>
+#include <QMessageBox>
 
 #include <filehandler.h>
 QT_BEGIN_NAMESPACE
@@ -36,6 +37,7 @@ private:
     QList<PushButtonWithIndex*> checkButtons;
     QList<PushButtonWithIndex*> delButtons;
     QList<PushButtonWithIndex*> calcButtons;
+    QList<PushButtonWithIndex*> changeFileButtons;
 
     QString sep = "|";
 
@@ -53,6 +55,11 @@ private:
     void clearWidgetsList(QList<T*>& list);
     void addStrDataToUI(const QString& str);
 
+    template<typename T>
+    void deleteButton(QList<T*>& list, int index);
+    bool checkDoublePath(const QString& filepath);
+
+    void messageBox(const QString& message);
 
 private slots:
     void loadFile();
@@ -64,6 +71,7 @@ private slots:
     void calcAll();
     void checkSumOne(int index = -1);
     void checkAll();
+    void changeFile();
 
 };
 #endif // MAINWINDOW_H
