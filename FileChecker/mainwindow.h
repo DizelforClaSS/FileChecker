@@ -25,14 +25,18 @@ private:
     QList<QLabel*> checksumsLabels;
     QList<QPushButton*> statusIndicates;
     QString sep = ":";
-
+    static const QStringList styleStatus;
     FileHandler* filehandler;
-
+    QStringList loadedData;
     QLabel* createLabelWithSize(const QString& text, double h, double w);
-
+    QPushButton* createStatusInd(int status, int index);
+    void setStyleStatus (QPushButton* but, int status);
+    void addDataToUI();
 private slots:
     void loadFile();
     void saveFile();
+    void addFile();
+
 
 };
 #endif // MAINWINDOW_H

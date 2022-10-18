@@ -24,7 +24,6 @@ public:
     QPair<QString, int> compareSumms(const QString& filepath, const QString& checksumm);
     QStringList readFile();
     bool writeToFile(const QStringList& data);
-private:
     QString chooseFileToRead();
     QString chooseFileToSave();
 
