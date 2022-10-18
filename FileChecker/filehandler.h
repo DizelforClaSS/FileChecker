@@ -15,7 +15,7 @@ class FileHandler : public QObject
 
 public:
     FileHandler(QWidget* pParent);
-    //TODO Функции сохранения и загрузки файла, чтения файла и записи в файл, контрольная сумма
+
     ///Возвращает строку с контрольнной суммой файла
     ///filepath - путь к файлу
     QString calcChecksumm(const QString& filepath);

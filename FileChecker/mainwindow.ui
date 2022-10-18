@@ -88,19 +88,6 @@
       <item>
        <layout class="QHBoxLayout" name="horizontalLayout_3">
         <item>
-         <spacer name="horizontalSpacer_3">
-          <property name="orientation">
-           <enum>Qt::Horizontal</enum>
-          </property>
-          <property name="sizeHint" stdset="0">
-           <size>
-            <width>40</width>
-            <height>20</height>
-           </size>
-          </property>
-         </spacer>
-        </item>
-        <item>
          <widget class="QLabel" name="pathLabel">
           <property name="minimumSize">
            <size>
@@ -123,7 +110,7 @@
          <widget class="QLabel" name="checksummLabel">
           <property name="minimumSize">
            <size>
-            <width>300</width>
+            <width>250</width>
             <height>0</height>
            </size>
           </property>
@@ -142,13 +129,13 @@
          <widget class="QLabel" name="statusLabel">
           <property name="minimumSize">
            <size>
-            <width>100</width>
+            <width>130</width>
             <height>0</height>
            </size>
           </property>
           <property name="maximumSize">
            <size>
-            <width>100</width>
+            <width>130</width>
             <height>30</height>
            </size>
           </property>

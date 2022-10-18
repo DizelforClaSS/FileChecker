@@ -7,15 +7,15 @@ MainWindow::MainWindow(QWidget *parent)
 {
     ui->setupUi(this);
     filehandler = new FileHandler(this);
+    this->setFixedSize(1200, 800);
+
     connect(ui->loadButton, &QAction::triggered, this, &MainWindow::loadFile);
     connect(ui->addNewFileButton, &PushButtonWithIndex::clicked, this, &MainWindow::addFile);
     connect(ui->saveButton, &QAction::triggered, this, &MainWindow::saveFile);
     connect(ui->clearAllButton, &QPushButton::clicked, this, &MainWindow::deleteAll);
     connect(ui->calcAllFilesButton, &QPushButton::clicked, this, &MainWindow::calcAll);
-    this->setFixedSize(1070, 610);
+    connect(ui->checkAllFilesButton, &QPushButton::clicked, this, &MainWindow::checkAll);
 }
-
-//TO DO Исправить баг с наложением
 
 template<typename  T>
 void MainWindow::clearWidgetsList(QList<T*>& list)
@@ -65,6 +65,7 @@ void MainWindow::addFile()
         return;
     if(loadedData.contains(filepath + sep))
         return;
+
     addStrDataToUI(filepath+sep);
 
 }
@@ -88,6 +89,9 @@ void MainWindow::deleteOne()
     delete delButtons[index];
     delButtons.remove(index);
 
+    delete calcButtons[index];
+    calcButtons.remove(index);
+
     loadedData.remove(index);
     for(int i = index; i < delButtons.size(); i++)
     {
@@ -97,6 +101,12 @@ void MainWindow::deleteOne()
     for(int i = index; i < checkButtons.size(); i++)
     {
         checkButtons[i]->setIndex(i);
+        ui->wsLayout->addWidget(filepathsLabels[i], i,  0);
+        ui->wsLayout->addWidget(checksumsLabels[i], i, 1);
+        ui->wsLayout->addWidget(statusIndicates[i], i , 2);
+        ui->wsLayout->addWidget(checkButtons[i], i, 3);
+        ui->wsLayout->addWidget(delButtons[i], i, 4);
+        ui->wsLayout->addWidget(calcButtons[i], i, 5);
     }
 }
 
@@ -107,6 +117,7 @@ void MainWindow::deleteAll()
     clearWidgetsList(statusIndicates);
     clearWidgetsList(checkButtons);
     clearWidgetsList(delButtons);
+    clearWidgetsList(calcButtons);
     loadedData.clear();
 }
 
@@ -125,6 +136,7 @@ void MainWindow::calcCheckSumOne(int index)
         setStyleStatus(statusIndicates[index], 2);
         statusIndicates[index]->setToolTip("Is correct");
         checksumsLabels[index]->setText(checksum);
+        loadedData[index] = filepath + sep + checksum;
 
     }  catch (QString ex) {
         setStyleStatus(statusIndicates[index], 1);
@@ -137,6 +149,38 @@ void MainWindow::calcAll()
     for (int i = 0; i < filepathsLabels.size(); i++)
         calcCheckSumOne(i);
 
+}
+
+void MainWindow::checkSumOne(int index)
+{
+    QString filepath;
+    QString checksum;
+    QObject* s = sender();
+
+    try {
+
+        if(s != ui->checkAllFilesButton)
+            index = dynamic_cast<PushButtonWithIndex*>(sender())->getIndex();
+
+        filepath = filepathsLabels[index]->text();
+        checksum = filehandler->calcChecksumm(filepath);
+        setStyleStatus(statusIndicates[index], 2);
+        if(checksumsLabels[index]->text() != checksum)
+            throw QString("Суммы разные");
+
+        statusIndicates[index]->setToolTip("Is correct");
+
+
+    }  catch (QString ex) {
+        setStyleStatus(statusIndicates[index], 1);
+        statusIndicates[index]->setToolTip(ex);
+    }
+}
+
+void MainWindow::checkAll()
+{
+    for (int i = 0; i < filepathsLabels.size(); i++)
+        checkSumOne(i);
 }
 
 
@@ -170,12 +214,16 @@ void MainWindow::addDataToUI()
     ui->wsLayout->addWidget(statusIndicates.last(), index , 2);
     ui->wsLayout->addWidget(checkButtons.last(), index, 3);
     ui->wsLayout->addWidget(delButtons.last(), index, 4);
+    ui->wsLayout->addWidget(calcButtons.last(), index, 5);
 
     checkButtons.last()->setIconSize(QSize(25, 25));
-    checkButtons.last()->setStyleSheet("qproperty-icon: url(:/Resources/sum_icon.png)");
+    checkButtons.last()->setStyleSheet("qproperty-icon: url(:/Resources/checksum.png)");
 
     delButtons.last()->setIconSize(QSize(25, 25));
     delButtons.last()->setStyleSheet("qproperty-icon: url(:/Resources/trash.png)");
+
+    calcButtons.last()->setIconSize(QSize(25, 25));
+    calcButtons.last()->setStyleSheet("qproperty-icon: url(:/Resources/sum_icon.png)");
 
 }
 
@@ -185,11 +233,19 @@ void MainWindow::addStrDataToUI(const QString &str)
     QStringList pathAndsumm = str.split(sep);
     filepathsLabels.append(createLabelWithSize(pathAndsumm[0], 30, 600));
     checksumsLabels.append(createLabelWithSize(pathAndsumm[1], 30, 300));
+
     statusIndicates.append(createStatusInd(0, filepathsLabels.size() - 1));
-    checkButtons.append(new PushButtonWithIndex(filepathsLabels.size() - 1));
-    connect(checkButtons.last(), &QPushButton::clicked, this, &MainWindow::calcCheckSumOne);
+
+    calcButtons.append(new PushButtonWithIndex(filepathsLabels.size() - 1));
+    connect(calcButtons.last(), &QPushButton::clicked, this, &MainWindow::calcCheckSumOne);
+
     delButtons.append(new PushButtonWithIndex(filepathsLabels.size() - 1));
     connect(delButtons.last(), &QPushButton::clicked, this, &MainWindow::deleteOne);
+
+    checkButtons.append(new PushButtonWithIndex(filepathsLabels.size() - 1));
+    connect(checkButtons.last(), &QPushButton::clicked, this, &MainWindow::checkSumOne);
+
     addDataToUI();
+
 }
 

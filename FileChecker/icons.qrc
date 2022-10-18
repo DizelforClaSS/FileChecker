@@ -2,5 +2,6 @@
     <qresource prefix="/">
         <file>Resources/sum_icon.png</file>
         <file>Resources/trash.png</file>
+        <file>Resources/checksum.png</file>
     </qresource>
 </RCC>

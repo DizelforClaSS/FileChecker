@@ -35,11 +35,15 @@ private:
     QList<PushButtonWithIndex*> statusIndicates;
     QList<PushButtonWithIndex*> checkButtons;
     QList<PushButtonWithIndex*> delButtons;
+    QList<PushButtonWithIndex*> calcButtons;
 
     QString sep = "|";
+
     static const QStringList styleStatus;
+
     FileHandler* filehandler;
     QStringList loadedData;
+
     QLabel* createLabelWithSize(const QString& text, double h, double w);
     PushButtonWithIndex* createStatusInd(int status, int index);
     void setStyleStatus (PushButtonWithIndex* but, int status);
@@ -49,7 +53,7 @@ private:
     void clearWidgetsList(QList<T*>& list);
     void addStrDataToUI(const QString& str);
 
-    //TODO функции переиндексирования, удаления
+
 private slots:
     void loadFile();
     void saveFile();
@@ -58,6 +62,8 @@ private slots:
     void deleteAll();
     void calcCheckSumOne(int index = -1);
     void calcAll();
+    void checkSumOne(int index = -1);
+    void checkAll();
 
 };
 #endif // MAINWINDOW_H
