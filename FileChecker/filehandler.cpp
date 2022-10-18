@@ -34,14 +34,27 @@ QStringList FileHandler::readFile()
             return data; // если это сделать невозможно, то завершаем функцию
 
     while(!file.atEnd())
-        data.append(file.readLine()); //считываем все данные с файла в объект data
+    {
+        QString str = file.readLine().trimmed();
+        if(!str.isEmpty())
+            data.append(str); //считываем все данные с файла в объект data
 
+        }
+    file.close();
     return data;
 }
 
 bool FileHandler::writeToFile(const QStringList &data)
 {
+    QString filepath = chooseFileToSave();
+    QFile file(filepath);
+    if(!file.open(QIODevice::WriteOnly))
+        return 0;
 
+    for(auto d : data)
+        file.write(QByteArray::fromStdString(d.toStdString() + "\n"));
+
+    file.close();
 }
 
 
@@ -59,5 +72,12 @@ QString FileHandler::chooseFileToRead()
 
 QString FileHandler::chooseFileToSave()
 {
+    QDir dir;                      // sAppPathConfig - путь к начальной папке
+    dir.mkdir(DIR_WITH_BEG_FILE); 	//Создаем папку если ее нет.
+    dir.cd(DIR_WITH_BEG_FILE);     //Переходим в папку с конфиг файлами
 
+    //Открываем окно выбора для загрузки файла
+    QString filename = QFileDialog::getSaveFileName(parent, tr("Открыть файл"), dir.path(), tr("TXT files (*.txt)"));
+
+    return filename;
 }

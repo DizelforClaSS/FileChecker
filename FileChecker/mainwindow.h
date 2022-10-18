@@ -12,7 +12,16 @@ QT_END_NAMESPACE
 
 class MainWindow : public QMainWindow
 {
-    Q_OBJECT
+     Q_OBJECT
+
+    class PushButtonWithIndex : public QPushButton
+    {
+      int index;
+        public:
+          PushButtonWithIndex(int i) : index(i){}
+          void setIndex(int i){index = i;}
+          int getIndex(){return index;}
+    };
 
 public:
     MainWindow(QWidget *parent = nullptr);
@@ -23,20 +32,30 @@ private:
     Ui::MainWindow *ui;
     QList<QLabel*> filepathsLabels;
     QList<QLabel*> checksumsLabels;
-    QList<QPushButton*> statusIndicates;
-    QString sep = ":";
+    QList<PushButtonWithIndex*> statusIndicates;
+    QList<PushButtonWithIndex*> checkButtons;
+    QList<PushButtonWithIndex*> delButtons;
+
+    QString sep = "|";
     static const QStringList styleStatus;
     FileHandler* filehandler;
     QStringList loadedData;
     QLabel* createLabelWithSize(const QString& text, double h, double w);
-    QPushButton* createStatusInd(int status, int index);
-    void setStyleStatus (QPushButton* but, int status);
+    PushButtonWithIndex* createStatusInd(int status, int index);
+    void setStyleStatus (PushButtonWithIndex* but, int status);
     void addDataToUI();
+
+    template<typename T>
+    void clearWidgetsList(QList<T*>& list);
+    void addStrDataToUI(const QString& str);
+
+    //TODO функции переиндексирования, удаления
 private slots:
     void loadFile();
     void saveFile();
     void addFile();
-
+    void deleteOne();
+    void deleteAll();
 
 };
 #endif // MAINWINDOW_H
