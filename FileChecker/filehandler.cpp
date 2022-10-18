@@ -5,16 +5,18 @@ FileHandler::FileHandler(QWidget *pParent) : parent(pParent)
 
 }
 
-QString FileHandler::solveChecksumm(const QString &filepath)
+QString FileHandler::calcChecksumm(const QString &filepath)
 {
         QFile f(filepath);
 
-        if (f.open(QFile::ReadOnly))
-        {
-            QCryptographicHash hash(QCryptographicHash::Md5);
-            return hash.result().toHex();
-        }
-        return "";
+        if (!f.open(QFile::ReadOnly))
+            throw QString("Файл отсутствует!");
+
+        QCryptographicHash hash(QCryptographicHash::Md5);
+        hash.addData(&f);
+        QString sum = hash.result().toHex();
+        return sum ;
+
 
 }
 
@@ -27,7 +29,7 @@ QStringList FileHandler::readFile()
 {
     QStringList data;
 
-    QString filepath = chooseFileToRead();
+    QString filepath = chooseFileToRead("TXT files (*.txt)");
     QFile file(filepath);
 
     if (!file.open(QIODevice::ReadOnly)) // Проверяем, возможно ли открыть файл для чтения
@@ -58,14 +60,14 @@ bool FileHandler::writeToFile(const QStringList &data)
 }
 
 
-QString FileHandler::chooseFileToRead()
+QString FileHandler::chooseFileToRead(const QString& extension)
 {
     QDir dir;                      // sAppPathConfig - путь к начальной папке
     dir.mkdir(DIR_WITH_BEG_FILE); 	//Создаем папку если ее нет.
     dir.cd(DIR_WITH_BEG_FILE);     //Переходим в папку с конфиг файлами
 
     //Открываем окно выбора для загрузки файла
-    QString filename = QFileDialog::getOpenFileName(parent, tr("Открыть файл"), dir.path(), tr("TXT files (*.txt)"));
+    QString filename = QFileDialog::getOpenFileName(parent, tr("Открыть файл"), dir.path(), extension);
 
     return filename;
 }

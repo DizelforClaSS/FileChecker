@@ -56,6 +56,8 @@ private slots:
     void addFile();
     void deleteOne();
     void deleteAll();
+    void calcCheckSumOne(int index = -1);
+    void calcAll();
 
 };
 #endif // MAINWINDOW_H

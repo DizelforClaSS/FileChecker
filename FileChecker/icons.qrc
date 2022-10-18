@@ -1,0 +1,6 @@
+<RCC>
+    <qresource prefix="/">
+        <file>Resources/sum_icon.png</file>
+        <file>Resources/trash.png</file>
+    </qresource>
+</RCC>

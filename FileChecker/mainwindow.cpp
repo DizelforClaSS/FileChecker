@@ -11,6 +11,7 @@ MainWindow::MainWindow(QWidget *parent)
     connect(ui->addNewFileButton, &PushButtonWithIndex::clicked, this, &MainWindow::addFile);
     connect(ui->saveButton, &QAction::triggered, this, &MainWindow::saveFile);
     connect(ui->clearAllButton, &QPushButton::clicked, this, &MainWindow::deleteAll);
+    connect(ui->calcAllFilesButton, &QPushButton::clicked, this, &MainWindow::calcAll);
     this->setFixedSize(1070, 610);
 }
 
@@ -109,6 +110,35 @@ void MainWindow::deleteAll()
     loadedData.clear();
 }
 
+void MainWindow::calcCheckSumOne(int index)
+{
+    QString filepath;
+    QString checksum;
+    QObject* s = sender();
+    try {
+
+        if(s != ui->calcAllFilesButton)
+            index = dynamic_cast<PushButtonWithIndex*>(sender())->getIndex();
+
+        filepath = filepathsLabels[index]->text();
+        checksum = filehandler->calcChecksumm(filepath);
+        setStyleStatus(statusIndicates[index], 2);
+        statusIndicates[index]->setToolTip("Is correct");
+        checksumsLabels[index]->setText(checksum);
+
+    }  catch (QString ex) {
+        setStyleStatus(statusIndicates[index], 1);
+        statusIndicates[index]->setToolTip(ex);
+    }
+}
+
+void MainWindow::calcAll()
+{
+    for (int i = 0; i < filepathsLabels.size(); i++)
+        calcCheckSumOne(i);
+
+}
+
 
 const QStringList MainWindow::styleStatus = {"gray;", "red;", "green;"};
 
@@ -121,10 +151,13 @@ MainWindow::PushButtonWithIndex* MainWindow::createStatusInd(int status, int ind
 
 void MainWindow::setStyleStatus(PushButtonWithIndex *but, int status)
 {
-    but->setStyleSheet("background-color: " + styleStatus[status] +
+    but->setStyleSheet("QPushButton {background-color: " + styleStatus[status] +
                      "border-style: outset;"
                      "border-radius: 10px;"
-                     "border-color: beige;"
+                     "border-color: beige;}"
+
+                     "QToolTip {"
+                    "background-color: #000000;}"
                        );
 }
 
@@ -137,6 +170,13 @@ void MainWindow::addDataToUI()
     ui->wsLayout->addWidget(statusIndicates.last(), index , 2);
     ui->wsLayout->addWidget(checkButtons.last(), index, 3);
     ui->wsLayout->addWidget(delButtons.last(), index, 4);
+
+    checkButtons.last()->setIconSize(QSize(25, 25));
+    checkButtons.last()->setStyleSheet("qproperty-icon: url(:/Resources/sum_icon.png)");
+
+    delButtons.last()->setIconSize(QSize(25, 25));
+    delButtons.last()->setStyleSheet("qproperty-icon: url(:/Resources/trash.png)");
+
 }
 
 void MainWindow::addStrDataToUI(const QString &str)
@@ -147,6 +187,7 @@ void MainWindow::addStrDataToUI(const QString &str)
     checksumsLabels.append(createLabelWithSize(pathAndsumm[1], 30, 300));
     statusIndicates.append(createStatusInd(0, filepathsLabels.size() - 1));
     checkButtons.append(new PushButtonWithIndex(filepathsLabels.size() - 1));
+    connect(checkButtons.last(), &QPushButton::clicked, this, &MainWindow::calcCheckSumOne);
     delButtons.append(new PushButtonWithIndex(filepathsLabels.size() - 1));
     connect(delButtons.last(), &QPushButton::clicked, this, &MainWindow::deleteOne);
     addDataToUI();

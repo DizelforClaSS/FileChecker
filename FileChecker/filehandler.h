@@ -18,13 +18,13 @@ public:
     //TODO Функции сохранения и загрузки файла, чтения файла и записи в файл, контрольная сумма
     ///Возвращает строку с контрольнной суммой файла
     ///filepath - путь к файлу
-    QString solveChecksumm(const QString& filepath);
+    QString calcChecksumm(const QString& filepath);
 
     ///Возвращает пару строка - число, где строка краткое описание результата работы, число - статус проверки.ы
     QPair<QString, int> compareSumms(const QString& filepath, const QString& checksumm);
     QStringList readFile();
     bool writeToFile(const QStringList& data);
-    QString chooseFileToRead();
+    QString chooseFileToRead(const QString& extension = "");
     QString chooseFileToSave();
 
 
