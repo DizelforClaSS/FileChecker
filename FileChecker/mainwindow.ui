@@ -239,8 +239,14 @@
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
   <action name="loadButton">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
    <property name="text">
     <string>Загрузить файл проверок</string>
+   </property>
+   <property name="shortcut">
+    <string>Shift+L</string>
    </property>
   </action>
   <action name="saveButton">
