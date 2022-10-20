@@ -10,7 +10,7 @@ MainWindow::MainWindow(QWidget *parent)
     this->setFixedSize(1200, 800);
 
     connect(ui->loadButton, &QAction::triggered, this, &MainWindow::loadFile);
-    connect(ui->addNewFileButton, &PushButtonWithIndex::clicked, this, &MainWindow::addFile);
+    connect(ui->addNewFileButton, &PushButtonWithIndex::clicked, this, &MainWindow::addFileToCheck);
     connect(ui->saveButton, &QAction::triggered, this, &MainWindow::saveFile);
     connect(ui->clearAllButton, &QPushButton::clicked, this, &MainWindow::deleteAll);
     connect(ui->calcAllFilesButton, &QPushButton::clicked, this, &MainWindow::calcAll);
@@ -48,8 +48,7 @@ void MainWindow::loadFile()
     {
       if(loadedData.contains(str))
           continue;
-
-        addStrDataToUI(str);
+      createDataRow(str);
     }
 }
 
@@ -58,7 +57,7 @@ void MainWindow::saveFile()
     filehandler->writeToFile(loadedData);
 }
 
-void MainWindow::addFile()
+void MainWindow::addFileToCheck()
 {
 
     QString filepath = filehandler->chooseFileToRead();
@@ -72,11 +71,8 @@ void MainWindow::addFile()
     if (filepath.isEmpty())
         return;
 
-    if(loadedData.contains(filepath + sep))
-        return;
 
-    addStrDataToUI(filepath+sep);
-
+    createDataRow(filepath+sep);
 }
 
 void MainWindow::deleteOne()
@@ -84,13 +80,7 @@ void MainWindow::deleteOne()
     PushButtonWithIndex* but = dynamic_cast<PushButtonWithIndex*>(sender());
     int index = but->getIndex();
 
-    deleteButton(checksumsLabels, index);
-    deleteButton(statusIndicates, index);
-    deleteButton(checkButtons, index);
-    deleteButton(delButtons, index);
-    deleteButton(calcButtons, index);
-    deleteButton(changeFileButtons, index);
-
+    deleteWidgetsOnRow(index);
     loadedData.remove(index);
 
     for(int i = index; i < delButtons.size(); i++)
@@ -107,6 +97,7 @@ void MainWindow::deleteOne()
         ui->wsLayout->addWidget(checkButtons[i], i, 3);
         ui->wsLayout->addWidget(delButtons[i], i, 4);
         ui->wsLayout->addWidget(calcButtons[i], i, 5);
+        ui->wsLayout->addWidget(changeFileButtons[i], i, 6);
     }
 }
 
@@ -206,7 +197,7 @@ void MainWindow::changeFile()
 
 const QStringList MainWindow::styleStatus = {"gray;", "red;", "green;"};
 
-MainWindow::PushButtonWithIndex* MainWindow::createStatusInd(int status, int index)
+MainWindow::PushButtonWithIndex* MainWindow::createStatusInd(int index, int status)
 {
    PushButtonWithIndex* b = new PushButtonWithIndex(index);
    setStyleStatus(b, status);
@@ -221,7 +212,7 @@ void MainWindow::setStyleStatus(PushButtonWithIndex *but, int status)
                      "border-color: beige;}"
 
                      "QToolTip {"
-                    "background-color: #000000;}"
+                     "background-color: #000000;}"
                        );
 }
 
@@ -259,14 +250,14 @@ void MainWindow::addDataToUI()
 
 }
 
-void MainWindow::addStrDataToUI(const QString &str)
+void MainWindow::createDataRow(const QString &str)
 {
     loadedData.append(str);
     QStringList pathAndsumm = str.split(sep);
     filepathsLabels.append(createLabelWithSize(pathAndsumm[0], 30, 600));
     checksumsLabels.append(createLabelWithSize(pathAndsumm[1], 30, 300));
 
-    statusIndicates.append(createStatusInd(0, filepathsLabels.size() - 1));
+    statusIndicates.append(createStatusInd(filepathsLabels.size() - 1));
 
     calcButtons.append(new PushButtonWithIndex(filepathsLabels.size() - 1));
     connect(calcButtons.last(), &QPushButton::clicked, this, &MainWindow::calcCheckSumOne);
@@ -281,7 +272,6 @@ void MainWindow::addStrDataToUI(const QString &str)
     connect(changeFileButtons.last(), &QPushButton::clicked, this, &MainWindow::changeFile);
 
     addDataToUI();
-
 }
 
 bool MainWindow::checkDoublePath(const QString &filepath)
@@ -301,10 +291,21 @@ void MainWindow::messageBox(const QString &message)
 
 }
 
-
-template<typename T>
-void MainWindow::deleteButton(QList<T*> &list, int index)
+void MainWindow::deleteWidgetsOnRow(int index)
 {
-    delete list[index];
-    list.remove(index);
+    delete filepathsLabels[index];
+    delete checksumsLabels[index];
+    delete statusIndicates[index];
+    delete checkButtons[index];
+    delete delButtons[index];
+    delete calcButtons[index];
+    delete changeFileButtons[index];
+
+    filepathsLabels.remove(index);
+    checksumsLabels.remove(index);
+    statusIndicates.remove(index);
+    checkButtons.remove(index);
+    delButtons.remove(index);
+    calcButtons.remove(index);
+    changeFileButtons.remove(index);
 }

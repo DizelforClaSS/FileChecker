@@ -17,15 +17,19 @@ class FileHandler : public QObject
 public:
     FileHandler(QWidget* pParent, const QString& sep);
 
-    ///Возвращает строку с контрольнной суммой файла
-    ///filepath - путь к файлу
+    ///Возвращает строку с контрольнной суммой файла находящегося по пути filepath
     QString calcChecksumm(const QString& filepath);
 
-    ///Возвращает пару строка - число, где строка краткое описание результата работы, число - статус проверки.ы
-    QPair<QString, int> compareSumms(const QString& filepath, const QString& checksumm);
+    ///Чтение файла, возвращает список путей файлов и их контрольные суммы
     QStringList readFile();
+
+    ///Записывает данные data в файл
     bool writeToFile(const QStringList& data);
+
+    ///Открывает диаологовое окно для выбора файла с расширением extension
     QString chooseFileToRead(const QString& extension = "");
+
+    ///Открывает диаологовое окно для выбора места сохранения файла
     QString chooseFileToSave();
 
 
