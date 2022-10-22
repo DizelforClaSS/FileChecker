@@ -41,14 +41,9 @@ QStringList FileHandler::readFile()
         if(pair.length() != 2)
             continue;
 
-        pair[0] = pair[0].trimmed();        //Убираем все пустые символы
-        if(pair[0].isEmpty())               //Если часть с полным путем файла пустой пропускаем
-            continue;
-
         if(pair[0].indexOf('.') < 0 && pair[0].lastIndexOf('.') == str.length() - 1) //На проверку пропускаем только файлы ("filename.extension")
             continue;
 
-        pair[1] = pair[1].trimmed();        //Убираем все пустые символы
         str = pair[0]+sep+pair[1];
 
         if(!str.isEmpty())
@@ -69,6 +64,7 @@ bool FileHandler::writeToFile(const QStringList &data)
         file.write(QByteArray::fromStdString(d.toStdString() + "\n")); //Построчно записываем абсолютные пути файлов и их контрольные суммы
 
     file.close();
+    return true;
 }
 
 
@@ -79,7 +75,7 @@ QString FileHandler::chooseFileToRead(const QString& extension)
     dir.cd(DIR_WITH_BEG_FILE);     //Переходим в папку с конфиг файлами
 
     //Открываем окно выбора для загрузки файла
-    QString filename = QFileDialog::getOpenFileName(parent, tr("Открыть файл"), dir.path(), extension);
+    QString filename = QFileDialog::getOpenFileName(parent, "Открыть файл", dir.path(), extension);
 
     return filename;
 }
@@ -91,7 +87,7 @@ QString FileHandler::chooseFileToSave()
     dir.cd(DIR_WITH_BEG_FILE);     //Переходим в папку с конфиг файлами
 
     //Открываем окно выбора для загрузки файла
-    QString filename = QFileDialog::getSaveFileName(parent, tr("Открыть файл"), dir.path(), tr("TXT files (*.txt)"));
+    QString filename = QFileDialog::getSaveFileName(parent, "Открыть файл", dir.path(), "TXT files (*.txt)");
 
     return filename;
 }

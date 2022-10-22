@@ -83,14 +83,15 @@ void MainWindow::deleteOne()
     deleteWidgetsOnRow(index);
     loadedData.remove(index);
 
-    for(int i = index; i < delButtons.size(); i++)
-    {
-        delButtons[i]->setIndex(i);
-    }
+
 
     for(int i = index; i < checkButtons.size(); i++)
     {
+        delButtons[i]->setIndex(i);
+        statusIndicates[i]->setIndex(i);
         checkButtons[i]->setIndex(i);
+        calcButtons[i]->setIndex(i);
+        changeFileButtons[i]->setIndex(i);
         ui->wsLayout->addWidget(filepathsLabels[i], i,  0);
         ui->wsLayout->addWidget(checksumsLabels[i], i, 1);
         ui->wsLayout->addWidget(statusIndicates[i], i , 2);
@@ -271,6 +272,7 @@ void MainWindow::createDataRow(const QString &str)
     changeFileButtons.append(new PushButtonWithIndex(filepathsLabels.size() - 1));
     connect(changeFileButtons.last(), &QPushButton::clicked, this, &MainWindow::changeFile);
 
+    statusIndicates.last()->setToolTip("Файл ещё не проверялся");
     addDataToUI();
 }
 
